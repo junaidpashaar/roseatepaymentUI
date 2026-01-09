@@ -1,0 +1,364 @@
+/* src/app/components/reservation/reservation.component.css */
+
+/* PAGE LAYOUT */
+.page-container {
+  min-height: 100vh;
+  padding: 20px;
+  font-family: 'Lato', sans-serif;
+  background: #fdf5f1;
+}
+
+/* LOADING STATE */
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+  gap: 20px;
+}
+
+.spinner {
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #e9926f;
+  border-radius: 50%;
+  width: 50px;
+  height: 50px;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+/* ERROR STATE */
+.error-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 80vh;
+}
+
+.error-box {
+  background: white;
+  padding: 40px;
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 500px;
+}
+
+.error-box h2 {
+  color: #dc3545;
+  margin-bottom: 15px;
+  font-size: 24px;
+}
+
+.error-box p {
+  color: #666;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+/* HEADER WITH BACKGROUND IMAGE */
+.header {
+  width: 100%;
+  height: 780px;
+  background-image: url('/header.jpg');
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+}
+
+/* CENTER LOGO */
+.header-logo {
+  position: absolute;
+  top: 40px;
+  left: 40px;
+  width: 200px;
+  height: auto;
+}
+
+/* TAB BUTTONS */
+.tabs {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  margin: 25px 0;
+}
+
+.tab-btn {
+  background: #ffbfa5;
+  color: rgb(0, 0, 0);
+  border: none;
+  padding: 10px 25px;
+  font-size: 18px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 400;
+  transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+  background: #e9926f;
+  color: rgb(255, 255, 255);
+}
+
+.tab-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+/* MAIN CONTENT BOX */
+.reservation-box {
+  background: #feebe2;
+  padding: 25px;
+  border-radius: 15px;
+  width: 70%;
+  margin: auto;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+}
+
+.reservation-box h2 {
+  margin-bottom: 20px;
+  color: #333;
+  font-size: 24px;
+}
+
+/* RESERVATION DETAILS GRID */
+.res-details {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  row-gap: 10px;
+  column-gap: 20px;
+  margin-bottom: 20px;
+}
+
+.res-details div {
+  padding: 8px 0;
+}
+
+.res-details .full-width {
+  grid-column: 1 / -1;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  background: #28a745;
+  color: white;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* TAB CONTENT */
+.tab-content {
+  margin-top: 30px;
+}
+
+/* ADHOC CONTAINER */
+.adhoc-container {
+  padding: 20px 0;
+}
+
+.enter-btn {
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #e9926f;
+  color: white;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 400;
+  transition: all 0.2s ease;
+}
+
+.enter-btn:hover {
+  background: #d17a54;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.amount-box {
+  margin-top: 18px;
+  background: #f8f8f8;
+  border-radius: 10px;
+  padding: 18px;
+  border: 1px solid #ddd;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  animation: slideDown 0.25s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.amount-box label {
+  font-size: 14px;
+  display: block;
+  margin-bottom: 8px;
+  color: #333;
+  font-weight: 600;
+}
+
+.amount-input {
+  width: 50%;
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid #bfbfbf;
+  border-radius: 6px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.amount-input:focus {
+  border-color: #e9926f;
+}
+
+.button-container {
+  margin-top: 20px;
+}
+
+.generate-btn {
+  width: 30%;
+  padding: 12px;
+  background: #e9926f;
+  color: #ffffff;
+  border: none;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 400;
+  transition: all 0.2s ease;
+}
+
+.generate-btn:hover:not(:disabled) {
+  background: #d17a54;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.generate-btn:disabled {
+  background: #ffbfa5;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* COMING SOON */
+.coming-soon {
+  text-align: center;
+  padding: 40px;
+  color: #666;
+  font-size: 16px;
+  font-style: italic;
+}
+
+/* MODAL STYLES */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  width: 420px;
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #feebe2;
+  padding: 15px;
+}
+
+.modal-header .left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-header .icon {
+  font-size: 20px;
+  color: green;
+}
+
+.modal-header .close {
+  background: none;
+  border: none;
+  font-size: 25px;
+  cursor: pointer;
+  color: #666;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.payment-box {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.copy-check {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.qr-wrapper {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.qr-wrapper img {
+  width: 180px;
+  height: 180px;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  .reservation-box {
+    width: 95%;
+  }
+
+  .res-details {
+    grid-template-columns: 1fr;
+  }
+
+  .amount-input {
+    width: 100%;
+  }
+
+  .generate-btn {
+    width: 100%;
+  }
+}

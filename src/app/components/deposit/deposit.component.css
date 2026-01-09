@@ -1,0 +1,216 @@
+/* src/app/components/deposit/deposit.component.css */
+.deposit-container {
+  padding: 20px 0;
+}
+
+.no-data {
+  text-align: center;
+  padding: 40px 20px;
+  color: #666;
+  font-size: 16px;
+}
+
+.select-all {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-weight: 700;
+  margin: 12px 0;
+}
+
+.select-all input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  transform: scale(1.2);
+  accent-color: #e9926f;
+  cursor: pointer;
+}
+
+.select-all-text {
+  font-size: 15px;
+  font-weight: 700;
+}
+
+.deposit-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 15px;
+  background: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.deposit-table th {
+  background: #f7f7f7;
+  padding: 12px 10px;
+  font-weight: 600;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  font-size: 14px;
+}
+
+.deposit-table td {
+  padding: 12px 10px;
+  border-bottom: 1px solid #eee;
+  font-size: 14px;
+}
+
+.deposit-table tr:last-child td {
+  border-bottom: none;
+}
+
+.deposit-table input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #e9926f;
+}
+
+.deposit-table input[type="checkbox"]:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.disabled-row {
+  background-color: #f9f9f9;
+  color: #999;
+}
+
+.disabled-row td {
+  opacity: 0.6;
+}
+
+.negative-amount {
+  color: #dc3545;
+  font-weight: 600;
+}
+
+.total-section {
+  margin-top: 20px;
+  padding: 15px 20px;
+  background: #f8f8f8;
+  border-radius: 10px;
+  border: 1px solid #e0e0e0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.total-section strong {
+  color: #222;
+  font-size: 19px;
+}
+
+.total-section span {
+  font-size: 20px;
+  font-weight: bold;
+  color: #000;
+}
+
+.generate-btn {
+  width: 30%;
+  margin-top: 18px;
+  padding: 12px;
+  background: #e9926f;
+  color: #ffffff;
+  border: none;
+  font-size: 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-family: "Cormorant Garamond", serif;
+  font-weight: 400;
+  transition: all 0.2s ease;
+}
+
+.generate-btn:hover:not(:disabled) {
+  background: #d17a54;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+.generate-btn:disabled {
+  background: #ffbfa5;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* Modal Styles */
+.modal-bg {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modal {
+  width: 420px;
+  background: white;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #feebe2;
+  padding: 15px;
+}
+
+.modal-header .left {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.modal-header .icon {
+  font-size: 20px;
+  color: green;
+}
+
+.modal-header .close {
+  background: none;
+  border: none;
+  font-size: 25px;
+  cursor: pointer;
+  color: #666;
+}
+
+.modal-body {
+  padding: 20px;
+}
+
+.payment-box {
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+
+.copy-check {
+  margin-top: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.qr-wrapper {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.qr-wrapper img {
+  width: 180px;
+  height: 180px;
+}

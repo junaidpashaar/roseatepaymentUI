@@ -1,0 +1,132 @@
+<!-- src/app/components/reservation/reservation.component.html -->
+<div class="page-container">
+
+  <!-- Loading State -->
+  <div *ngIf="loading" class="loading-container">
+    <div class="spinner"></div>
+    <p>Loading reservation details...</p>
+  </div>
+
+  <!-- Error State -->
+  <div *ngIf="!loading && errorMessage" class="error-container">
+    <div class="error-box">
+      <h2>⚠️ Error</h2>
+      <p>{{ errorMessage }}</p>
+    </div>
+  </div>
+
+  <!-- Valid Reservation Content -->
+  <ng-container *ngIf="!loading && !errorMessage && isValidReservation">
+    
+    <!-- HEADER WITH BACKGROUND IMAGE + CENTER LOGO -->
+    <header class="header">
+      <img src="/logo.png" alt="Hotel Logo" class="header-logo" />
+    </header>
+
+    <!-- TAB BUTTONS -->
+    <div class="tabs">
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'deposit'"
+        (click)="setTab('deposit')">
+        Deposit
+      </button>
+
+      <button 
+        class="tab-btn" 
+        [class.active]="activeTab === 'adhoc'"
+        (click)="setTab('adhoc')">
+        Adhoc
+      </button>
+
+      <button 
+        class="tab-btn"  
+        [class.active]="activeTab === 'folio'"
+        (click)="setTab('folio')">
+        Folio
+      </button>
+    </div>
+
+    <!-- RESERVATION BOX -->
+    <div class="reservation-box">
+
+      <h2>Reservation Details</h2>
+
+      <div class="res-details">
+        <div><strong>Reservation No.:</strong> {{reservation.resNo}}</div>
+        <div><strong>Confirmation No.:</strong> {{reservation.confirmationNo}}</div>
+        <div><strong>Guest Name:</strong> {{reservation.guest}}</div>
+        <div><strong>Status:</strong> <span class="status-badge">{{reservation.status}}</span></div>
+        <div><strong>Check In:</strong> {{reservation.checkIn}}</div>
+        <div><strong>Check Out:</strong> {{reservation.checkOut}}</div>
+        <div class="full-width"><strong>Total Amount Due:</strong> ₹{{reservation.amount}}</div>
+      </div>
+
+      <!-- TAB CONTENT -->
+      <div class="tab-content">
+        
+        <!-- DEPOSIT TAB -->
+        <app-deposit *ngIf="activeTab === 'deposit'"></app-deposit>
+
+        <!-- ADHOC TAB -->
+        <div *ngIf="activeTab === 'adhoc'" class="adhoc-container">
+          <button class="enter-btn" (click)="showEnterAmount()">Enter Amount</button>
+
+          <div *ngIf="showAdhocAmountInput" class="amount-box">
+            <label for="amount">Amount:</label>
+            <input 
+              type="number"
+              [(ngModel)]="adhocAmount"
+              placeholder="Enter amount"
+              class="amount-input"
+            />
+            <div class="button-container">
+              <button 
+                class="generate-btn"
+                *ngIf="adhocAmount && adhocAmount > 0"
+                (click)="generateAdhocPaymentLink()">
+                Generate Payment Link
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- FOLIO TAB -->
+        <ng-container *ngIf="activeTab === 'folio'">
+          <h3>Folio Summary</h3>
+          <p class="coming-soon">Folio functionality coming soon...</p>
+        </ng-container>
+
+      </div>
+
+    </div>
+
+  </ng-container>
+
+</div>
+
+<!-- PAYMENT MODAL (for Adhoc) -->
+<div class="modal-bg" *ngIf="showPaymentModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="left">
+        <span class="icon">✔</span>
+        <span>Payment link has been generated successfully</span>
+      </div>
+      <button class="close" (click)="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <input class="payment-box" [value]="paymentLink" readonly />
+
+      <label class="copy-check">
+        <input type="checkbox" (change)="copyLink()" /> 
+        Copy Link
+      </label>
+
+      <div class="qr-wrapper">
+        <img [src]="qrCode" alt="QR Code" />
+      </div>
+    </div>
+  </div>
+</div>

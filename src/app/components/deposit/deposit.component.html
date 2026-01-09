@@ -1,0 +1,90 @@
+<!-- src/app/components/deposit/deposit.component.html -->
+<div class="deposit-container">
+  <h3>Pending Deposits</h3>
+
+  <div *ngIf="depositPolicies.length === 0" class="no-data">
+    <p>No deposit policies found</p>
+  </div>
+
+  <div *ngIf="depositPolicies.length > 0">
+    <!-- Select All Checkbox -->
+    <label class="select-all">
+      <input 
+        type="checkbox"
+        [(ngModel)]="selectAll"
+        (change)="toggleSelectAll()" 
+      />
+      <span class="select-all-text">Select All</span>
+    </label>
+
+    <!-- Deposit Table -->
+    <table class="data-table deposit-table">
+      <thead>
+        <tr>
+          <th style="width: 80px; text-align: center;">Select</th>
+          <th style="width: 200px; text-align: left;">Revenue Type</th>
+          <th style="width: 180px; text-align: left;">Deadline</th>
+          <th style="width: 150px; text-align: right;">Amount Due</th>
+        </tr>
+      </thead>
+
+      <tbody>
+        <tr *ngFor="let policy of depositPolicies" [class.disabled-row]="policy.disabled">
+          <td style="text-align: center;">
+            <input 
+              type="checkbox" 
+              [(ngModel)]="policy.selected"
+              [disabled]="policy.disabled"
+              (change)="onPolicySelect()"
+            />
+          </td>
+          <td style="text-align: left;">{{ policy.revenueType }}</td>
+          <td style="text-align: left;">{{ policy.deadline }}</td>
+          <td style="text-align: right;" [class.negative-amount]="policy.amountDue <= 0">
+            ₹ {{ policy.amountDue | number:'1.2-2' }}
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Total Amount Section -->
+    <div class="total-section">
+      <strong>Total Amount:</strong>
+      <span>₹ {{ totalAmount | number:'1.2-2' }}</span>
+    </div>
+
+    <!-- Generate Payment Button -->
+    <button 
+      class="generate-btn"
+      [disabled]="!hasSelectedPolicies()"
+      (click)="generatePaymentLink()">
+      Pay Now
+    </button>
+  </div>
+</div>
+
+<!-- Payment Modal -->
+<div class="modal-bg" *ngIf="showPaymentModal">
+  <div class="modal">
+    <div class="modal-header">
+      <div class="left">
+        <span class="icon">✔</span>
+        <span>Payment link has been generated successfully</span>
+      </div>
+      <button class="close" (click)="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+      <input class="payment-box" [value]="paymentLink" readonly />
+
+      <label class="copy-check">
+        <input type="checkbox" (change)="copyLink()" /> 
+        Copy Link
+      </label>
+
+      <div class="qr-wrapper">
+        <img [src]="qrCode" alt="QR Code" />
+      </div>
+    </div>
+  </div>
+</div>
