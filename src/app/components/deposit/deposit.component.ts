@@ -19,6 +19,7 @@ interface DepositPolicy {
 export class DepositComponent implements OnInit {
   @Input() hotelId: string = '';
   @Input() reservationId: string = '';
+  @Input() type: 'deposit' | 'adhoc' = 'deposit'; // ✅ ADD THIS
 
   depositPolicies: DepositPolicy[] = [];
   selectAll: boolean = false;
@@ -121,16 +122,23 @@ export class DepositComponent implements OnInit {
 
     this.loading = true;
 
+    console.log("ss",{
+      hotelId: this.hotelId,
+      reservationId: this.reservationId,
+      policyIds: selectedPolicyIds,
+      amount: this.totalAmount
+    });
     this.paymentService.generateDepositPaymentLink({
       hotelId: this.hotelId,
       reservationId: this.reservationId,
+      type:this.type,
       policyIds: selectedPolicyIds,
       amount: this.totalAmount
     }).subscribe({
       next: (response) => {
         this.loading = false;
         if (response.success && response.data) {
-          this.paymentLink = response.data.paymentUrl;
+          this.paymentLink = response.data.short_url;
           this.generateQrCode(this.paymentLink);
           this.showPaymentModal = true;
         }

@@ -344,6 +344,425 @@
   height: 180px;
 }
 
+.folio-row {
+  display: grid;
+  grid-template-columns: 50px 1fr 1fr;
+  padding: 12px 15px;
+  border-bottom: 1px solid #eee;
+  align-items: center;
+}
+
+.folio-row.header {
+  background: #f7f7f7;
+  font-weight: 600;
+  color: #333;
+}
+
+.folio-row:last-child {
+  border-bottom: none;
+}
+
+.folio-row div {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/* FOLIO TABLE */
+.folio-container {
+  margin-top: 20px;
+}
+
+.folio-header {
+  display: flex;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+}
+
+.select-all {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.folio-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+.folio-table thead {
+  background: #feebe2;
+}
+
+.folio-table th,
+.folio-table td {
+  padding: 14px 12px;
+  text-align: left;
+  font-size: 14px;
+}
+
+.folio-table th {
+  font-weight: 600;
+  color: #333;
+}
+
+.folio-table tbody tr {
+  border-bottom: 1px solid #eee;
+}
+
+.folio-table tbody tr:last-child {
+  border-bottom: none;
+}
+
+.folio-table tbody tr:hover {
+  background: #fafafa;
+}
+
+.disabled-row {
+  opacity: 0.55;
+  background: #f8f8f8;
+}
+
+/* STATUS BADGES */
+.status-badge {
+  padding: 4px 10px;
+  font-size: 12px;
+  border-radius: 12px;
+  font-weight: 600;
+}
+
+.status-badge.pending {
+  background: #e9926f;
+  color: #fff;
+}
+
+.status-badge.disabled {
+  background: #ccc;
+  color: #555;
+}
+
+/* FOOTER */
+.folio-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 20px;
+}
+
+.folio-footer .total {
+  font-size: 16px;
+}
+
+/* PAY BUTTON */
+.pay-now-btn {
+  padding: 12px 28px;
+  font-size: 16px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  background: #e9926f;
+  color: white;
+  font-family: "Cormorant Garamond", serif;
+  transition: all 0.2s ease;
+}
+
+.pay-now-btn:hover:not(:disabled) {
+  background: #d17a54;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.pay-now-btn:disabled {
+  background: #ffbfa5;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+/* Container */
+.folio-container {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Header */
+.folio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.folio-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+/* Select all */
+.select-all {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+}
+
+.select-all input {
+  width: 18px;
+  height: 18px;
+  accent-color: #e9926f;
+  cursor: pointer;
+}
+
+/* Table wrapper */
+.folio-table-wrapper {
+  overflow-x: auto;
+}
+
+.folio-table th {
+  background: #f6f6f6;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 600;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.folio-table td {
+  padding: 12px;
+  font-size: 14px;
+  border-bottom: 1px solid #eee;
+  vertical-align: middle;
+}
+
+/* Columns */
+.col-select { width: 80px; text-align: center; }
+.col-index { width: 100px; }
+.col-payee { width: 220px; }
+.col-amount { width: 140px; }
+.col-ref { width: 260px; }
+.col-status { width: 120px; }
+
+.text-center { text-align: center; }
+.text-right { text-align: right; }
+
+/* Amount */
+.amount {
+  font-weight: 600;
+}
+
+/* Reference ellipsis */
+.reference {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Disabled row */
+.disabled-row {
+  background: #fafafa;
+  color: #999;
+}
+
+.disabled-row input {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+/* Status badge */
+.status-badge {
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-badge.payable {
+  background: #f4a261;
+  color: #fff;
+}
+
+.status-badge.settled {
+  background: #e0e0e0;
+  color: #555;
+}
+
+/* Footer */
+.folio-footer {
+  margin-top: 18px;
+  padding: 14px 18px;
+  background: #f8f8f8;
+  border-radius: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.folio-footer .total {
+  font-size: 18px;
+  font-weight: 600;
+}
+
+/* Pay button */
+.pay-now-btn {
+  width: 200px;
+  padding: 12px;
+  background: #e9926f;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.pay-now-btn:hover:not(:disabled) {
+  background: #d17a54;
+  transform: translateY(-2px);
+}
+
+.pay-now-btn:disabled {
+  background: #ffbfa5;
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+/* No data */
+.no-folio {
+  padding: 40px;
+  text-align: center;
+  color: #777;
+  font-size: 16px;
+}
+
+.folio-card {
+  background: #ffffff;
+  border-radius: 14px;
+  padding: 24px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.05);
+}
+
+/* HEADER */
+.folio-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.folio-header h3 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.select-all {
+  font-size: 14px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* TABLE */
+.folio-table {
+  width: 100%;
+  border-collapse: collapse;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.folio-table thead {
+  background: #fafafa;
+}
+
+.folio-table th {
+  text-align: left;
+  padding: 14px;
+  font-size: 14px;
+  font-weight: 600;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.folio-table td {
+  padding: 14px;
+  font-size: 14px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.amount {
+  font-weight: 600;
+}
+
+/* ROW STATES */
+.disabled-row {
+  opacity: 0.5;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 20px;
+  color: #888;
+}
+
+/* STATUS BADGES */
+.status-badge {
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-block;
+}
+
+.status-badge.settled {
+  background: #f1f1f1;
+  color: #9aa0a6;
+}
+
+.status-badge.payable {
+  background: #ff9f55;
+  color: #ffffff;
+}
+
+/* FOOTER */
+.folio-footer {
+  margin-top: 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 16px;
+  border-top: 1px solid #eee;
+}
+
+.total {
+  font-size: 16px;
+}
+
+.pay-now-btn {
+  background: #ffccb3;
+  color: #fff;
+  border: none;
+  padding: 12px 28px;
+  border-radius: 10px;
+  font-size: 15px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.pay-now-btn:hover:not(:disabled) {
+  background: #ffb28a;
+}
+
+.pay-now-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+
+
 /* RESPONSIVE */
 @media (max-width: 768px) {
   .reservation-box {

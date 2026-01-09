@@ -12,28 +12,32 @@ export interface PaymentLinkRequest {
 
 export interface DepositPaymentRequest extends PaymentLinkRequest {
   policyIds: string;
+  hotelId: string;
+  reservationId: string;
+  type: string;
 }
 
 export interface AdhocPaymentRequest extends PaymentLinkRequest {
   description?: string;
+  hotelId: string;
+  reservationId: string;
 }
 
 export interface FolioPaymentRequest extends PaymentLinkRequest {
   folioIds: string;
+  hotelId: string;
+  reservationId: string;
 }
 
 export interface PaymentLinkResponse {
   success: boolean;
   message: string;
   data: {
-    paymentLinkId: string;
-    paymentUrl: string;
+    payment_link_id: string;
+    short_url: string;
     amount: number;
     currency: string;
-    hotelId: string;
-    reservationId: string;
-    guestName: string;
-    type: string;
+    customer_name: string;
     createdAt: string;
   };
 }
@@ -66,5 +70,13 @@ export class PaymentService {
   generateFolioPaymentLink(request: FolioPaymentRequest): Observable<PaymentLinkResponse> {
     const url = `${environment.apiUrl}/payment/folio/generate`;
     return this.http.post<PaymentLinkResponse>(url, request);
+  }
+
+  /**
+   * Get folio data for a reservation
+   */
+  getCheckoutFolio(hotelId: string, reservationId: string): Observable<any> {
+    const url = `${environment.apiUrl}/reservation/${hotelId}/${reservationId}/checkout-folio`;
+    return this.http.get(url);
   }
 }

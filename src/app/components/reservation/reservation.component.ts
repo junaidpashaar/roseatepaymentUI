@@ -3,6 +3,20 @@ import { ActivatedRoute } from '@angular/router';
 import { ReservationService } from '../../services/reservation.service';
 import { PaymentService } from '../../services/payment.service';
 
+/**
+ * Folio window interface for type safety
+ */
+interface FolioWindow {
+  folioWindowNo: number;
+  balance?: { amount: number; currencyCode?: string };
+  revenue?: { amount: number; currencyCode?: string };
+  payment?: { amount: number; currencyCode?: string };
+  postings?: any[];
+  selected?: boolean; // for UI selection
+  disabled?: boolean;  // <-- add this
+  [key: string]: any;  // optional for other properties
+}
+
 @Component({
   selector: 'app-reservation',
   templateUrl: './reservation.component.html',
@@ -43,6 +57,9 @@ export class ReservationComponent implements OnInit {
   paymentLink: string = '';
   qrCode: string = '';
   showPaymentModal: boolean = false;
+  reservationStatus: string = '';
+
+  
 
   constructor(
     private route: ActivatedRoute,
@@ -95,9 +112,9 @@ export class ReservationComponent implements OnInit {
     }
 
     const res = data.reservations.reservation[0];
-    const status = res.reservationStatus;
+    this.reservationStatus = res.reservationStatus;
 
-    if (status === 'Cancel' || status === 'Cancelled') {
+    if (this.reservationStatus === 'Cancel' || this.reservationStatus === 'Cancelled') {
       this.errorMessage = 'Invalid Reservation: This reservation has been cancelled';
       return;
     }
@@ -144,6 +161,10 @@ export class ReservationComponent implements OnInit {
 
   setTab(tab: 'deposit' | 'adhoc' | 'folio'): void {
     this.activeTab = tab;
+
+    if (tab === 'folio' && this.folioList.length === 0) {
+      this.loadFolioData();
+    }
   }
 
   /* ---------------- Adhoc Payment ---------------- */
@@ -168,7 +189,7 @@ export class ReservationComponent implements OnInit {
       .subscribe({
         next: (response) => {
           if (response.success && response.data) {
-            this.paymentLink = response.data.paymentUrl;
+            this.paymentLink = response.data.short_url;
             this.generateQrCode(this.paymentLink);
             this.showPaymentModal = true;
           }
@@ -197,8 +218,8 @@ export class ReservationComponent implements OnInit {
 
   calculateTotalFolioAmount(): void {
     this.totalFolioAmount = this.folioList
-      .filter(f => f.selected)
-      .reduce((sum, item) => sum + Number(item.amount), 0);
+      .filter(f => f.selected && !f.disabled)
+      .reduce((sum, item) => sum + Number(item.balance?.amount || 0), 0);
   }
 
   generateFolioPaymentLink(): void {
@@ -221,13 +242,47 @@ export class ReservationComponent implements OnInit {
       .subscribe({
         next: (response) => {
           if (response.success && response.data) {
-            this.paymentLink = response.data.paymentUrl;
+            this.paymentLink = response.data.short_url;
             this.generateQrCode(this.paymentLink);
             this.showPaymentModal = true;
           }
         },
         error: (error) => {
           alert(error.error?.message || 'Failed to generate payment link');
+        }
+      });
+  }
+
+  loadFolioData(): void {
+    this.loading = true;
+
+    this.paymentService.getCheckoutFolio(this.hotelId, this.reservationId)
+      .subscribe({
+        next: (response) => {
+          const folios: FolioWindow[] = response?.data?.reservationFolioInformation?.folioWindows || [];
+
+          // Add selected flag and disabled flag
+          this.folioList = folios.map((f: any, index: number) => {
+            const firstFolio = f.folios?.[0];
+            const firstPosting = firstFolio?.postings?.[0];
+
+            return {
+              ...f,
+              rowId: index + 1,
+              selected: false,
+              disabled: !((f.balance?.amount ?? 0) > 0), 
+              balanceAmount: f.balance?.amount ?? 0,
+              paymentAmount: f.payment?.amount ?? 0,
+              reference: firstPosting?.reference || '-'
+            };
+          });
+
+          this.calculateTotalFolioAmount();
+          this.loading = false;
+        },
+        error: (error) => {
+          console.error('Folio load error:', error);
+          this.loading = false;
         }
       });
   }

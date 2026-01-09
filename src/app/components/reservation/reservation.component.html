@@ -26,6 +26,7 @@
     <!-- TAB BUTTONS -->
     <div class="tabs">
       <button 
+       *ngIf="reservation && reservation.amount"
         class="tab-btn" 
         [class.active]="activeTab === 'deposit'"
         (click)="setTab('deposit')">
@@ -66,7 +67,12 @@
       <div class="tab-content">
         
         <!-- DEPOSIT TAB -->
-        <app-deposit *ngIf="activeTab === 'deposit'"></app-deposit>
+        <app-deposit
+        *ngIf="activeTab === 'deposit'" 
+        [hotelId]="hotelId"
+        [reservationId]="reservationId"  
+        [type]="'deposit'">
+      </app-deposit>
 
         <!-- ADHOC TAB -->
         <div *ngIf="activeTab === 'adhoc'" class="adhoc-container">
@@ -92,11 +98,87 @@
         </div>
 
         <!-- FOLIO TAB -->
-        <ng-container *ngIf="activeTab === 'folio'">
-          <h3>Folio Summary</h3>
-          <p class="coming-soon">Folio functionality coming soon...</p>
-        </ng-container>
+      <div class="folio-card" *ngIf="reservationStatus === 'InHouse' && activeTab === 'folio'">
+        <div class="folio-header">
+          <h3>Pending Folios</h3>
 
+          <label class="select-all">
+            <input
+              type="checkbox"
+              [(ngModel)]="selectAllFolios"
+              (change)="toggleSelectAllFolios()"
+            />
+            Select All
+          </label>
+        </div>
+
+        <table class="folio-table">
+          <thead>
+            <tr>
+              <th>Select</th>
+              <th>Folio No</th>
+              <th>Balance</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+
+          <tbody>
+            <tr
+              *ngFor="let folio of folioList"
+              [class.disabled-row]="folio.disabled"
+            >
+              <td>
+                <input
+                  type="checkbox"
+                  [(ngModel)]="folio.selected"
+                  (change)="onSingleFolioSelect()"
+                  [disabled]="folio.disabled"
+                />
+              </td>
+
+              <td>{{ folio.folioWindowNo }}</td> 
+
+              <td class="amount">
+                ₹ {{ folio.balance.amount | number:'1.2-2' }}
+              </td>
+
+              <td>
+                <span
+                  class="status-badge"
+                  [ngClass]="{
+                    settled: folio.disabled,
+                    payable: !folio.disabled
+                  }"
+                >
+                  {{ folio.disabled ? 'Settled' : 'Payable' }}
+                </span>
+              </td>
+            </tr>
+
+            <tr *ngIf="folioList.length === 0">
+              <td colspan="7" class="empty-state">
+                No folios available for payment
+              </td>
+            </tr>
+          </tbody>
+        </table>
+
+        <div class="folio-footer">
+          <div class="total">
+            <strong>Total Selected:</strong> ₹ {{ totalFolioAmount | number:'1.2-2' }}
+          </div>
+
+          <button
+            class="pay-now-btn"
+            [disabled]="!hasSelectedFolios()"
+            (click)="generateFolioPaymentLink()"
+          >
+            Pay Now
+          </button>
+        </div>
+
+      </div>
+ 
       </div>
 
     </div>

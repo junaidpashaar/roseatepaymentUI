@@ -1,12 +1,12 @@
 <!-- src/app/components/deposit/deposit.component.html -->
+ 
 <div class="deposit-container">
-  <h3>Pending Deposits</h3>
-
   <div *ngIf="depositPolicies.length === 0" class="no-data">
     <p>No deposit policies found</p>
-  </div>
+  </div>  
 
   <div *ngIf="depositPolicies.length > 0">
+    <h3>Pending Deposits</h3>
     <!-- Select All Checkbox -->
     <label class="select-all">
       <input 
