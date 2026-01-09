@@ -1,8 +1,7 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AuthService } from '../../services/auth.service';
+import { ActivatedRoute } from '@angular/router';
 import { ReservationService } from '../../services/reservation.service';
-import { forkJoin } from 'rxjs';
+import { PaymentService } from '../../services/payment.service';
 
 @Component({
   selector: 'app-reservation',
@@ -11,10 +10,10 @@ import { forkJoin } from 'rxjs';
 })
 export class ReservationComponent implements OnInit {
   activeTab: 'deposit' | 'adhoc' | 'folio' = 'deposit';
-  
+
   hotelId: string = '';
   reservationId: string = '';
-  
+
   loading: boolean = true;
   errorMessage: string = '';
   isValidReservation: boolean = false;
@@ -34,7 +33,7 @@ export class ReservationComponent implements OnInit {
   // Adhoc payment
   showAdhocAmountInput: boolean = false;
   adhocAmount: number | null = null;
-  
+
   // Folio
   folioList: any[] = [];
   selectAllFolios: boolean = false;
@@ -47,9 +46,8 @@ export class ReservationComponent implements OnInit {
 
   constructor(
     private route: ActivatedRoute,
-    private router: Router,
-    private authService: AuthService,
-    private reservationService: ReservationService
+    private reservationService: ReservationService,
+    private paymentService: PaymentService
   ) {}
 
   ngOnInit(): void {
@@ -63,44 +61,31 @@ export class ReservationComponent implements OnInit {
         return;
       }
 
-      this.initializeApp();
+      this.loadReservationData();
     });
   }
 
-  initializeApp(): void {
-    const token = this.authService.getToken();
-    
-    if (!token || this.authService.isTokenExpired()) {
-      this.authService.login().subscribe({
-        next: () => {
-          this.loadReservationData();
+  /**
+   * Single API call to load reservation + deposit + folio data
+   */
+  loadReservationData(): void {
+    this.reservationService
+      .getCompleteReservationData(this.hotelId, this.reservationId)
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            this.processReservationData(response.data.reservation);
+          } else {
+            this.errorMessage = 'Reservation not found';
+          }
+          this.loading = false;
         },
         error: (error) => {
-          this.errorMessage = 'Authentication failed. Please try again.';
+          this.errorMessage = error.error?.message || 'Failed to load reservation data';
           this.loading = false;
-          console.error('Login error:', error);
+          console.error('Reservation load error:', error);
         }
       });
-    } else {
-      this.loadReservationData();
-    }
-  }
-
-  loadReservationData(): void {
-    forkJoin({
-      reservation: this.reservationService.getReservation(this.hotelId, this.reservationId),
-      depositFolio: this.reservationService.getDepositFolio(this.hotelId, this.reservationId)
-    }).subscribe({
-      next: (result) => {
-        this.processReservationData(result.reservation);
-        this.loading = false;
-      },
-      error: (error) => {
-        this.errorMessage = 'Failed to load reservation data. Please try again.';
-        this.loading = false;
-        console.error('Data loading error:', error);
-      }
-    });
   }
 
   processReservationData(data: any): void {
@@ -119,42 +104,50 @@ export class ReservationComponent implements OnInit {
 
     this.isValidReservation = true;
 
-    // Extract reservation details
-    const guest = res.reservationGuests?.[0]?.profileInfo?.profile?.customer?.personName?.[0];
+    const guest =
+      res.reservationGuests?.[0]?.profileInfo?.profile?.customer?.personName?.[0];
     const roomStay = res.roomStay;
     const resIds = res.reservationIdList || [];
 
     this.reservation = {
       resNo: resIds.find((id: any) => id.type === 'Reservation')?.id || '',
       confirmationNo: resIds.find((id: any) => id.type === 'Confirmation')?.id || '',
-      guest: guest ? `${guest.givenName || ''} ${guest.surname || ''}`.trim() : '',
-      email: '', // Extract from communication if available
-      mobile: '', // Extract from communication if available
+      guest: guest
+        ? `${guest.givenName || ''} ${guest.surname || ''}`.trim()
+        : '',
+      email: '',
+      mobile: '',
       checkIn: this.formatDate(roomStay?.arrivalDate),
       checkOut: this.formatDate(roomStay?.departureDate),
       amount: this.formatAmount(roomStay?.total?.amountBeforeTax || 0),
-      status: status
+      status
     };
+
+    // Optional: assign folio list if backend sends it
+    this.folioList = data.folios || [];
   }
 
   formatDate(dateString: string): string {
     if (!dateString) return '';
     const date = new Date(dateString);
-    const day = date.getDate();
-    const month = date.toLocaleString('en', { month: 'short' });
-    const year = date.getFullYear();
-    return `${day} ${month}, ${year}`;
+    return `${date.getDate()} ${date.toLocaleString('en', {
+      month: 'short'
+    })}, ${date.getFullYear()}`;
   }
 
   formatAmount(amount: number): string {
-    return amount.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return amount.toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    });
   }
 
   setTab(tab: 'deposit' | 'adhoc' | 'folio'): void {
     this.activeTab = tab;
   }
 
-  // Adhoc methods
+  /* ---------------- Adhoc Payment ---------------- */
+
   showEnterAmount(): void {
     this.showAdhocAmountInput = true;
   }
@@ -165,14 +158,31 @@ export class ReservationComponent implements OnInit {
       return;
     }
 
-    this.paymentLink = `https://payment.evolveback.com/payment?adhocAmount=${this.adhocAmount}`;
-    this.generateQrCode(this.paymentLink);
-    this.showPaymentModal = true;
+    this.paymentService
+      .generateAdhocPaymentLink({
+        hotelId: this.hotelId,
+        reservationId: this.reservationId,
+        amount: this.adhocAmount,
+        description: 'Adhoc payment'
+      })
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            this.paymentLink = response.data.paymentUrl;
+            this.generateQrCode(this.paymentLink);
+            this.showPaymentModal = true;
+          }
+        },
+        error: (error) => {
+          alert(error.error?.message || 'Failed to generate payment link');
+        }
+      });
   }
 
-  // Folio methods (placeholder - implement as needed)
+  /* ---------------- Folio Payment ---------------- */
+
   toggleSelectAllFolios(): void {
-    this.folioList.forEach(f => f.selected = this.selectAllFolios);
+    this.folioList.forEach(f => (f.selected = this.selectAllFolios));
     this.calculateTotalFolioAmount();
   }
 
@@ -193,20 +203,41 @@ export class ReservationComponent implements OnInit {
 
   generateFolioPaymentLink(): void {
     const selectedFolios = this.folioList.filter(f => f.selected);
+
     if (selectedFolios.length === 0) {
       alert('Please select at least one folio');
       return;
     }
 
     const folioIds = selectedFolios.map(f => f.folioNo).join(',');
-    this.paymentLink = `https://payment.evolveback.com/payment?folios=${folioIds}&amount=${this.totalFolioAmount}`;
-    this.generateQrCode(this.paymentLink);
-    this.showPaymentModal = true;
+
+    this.paymentService
+      .generateFolioPaymentLink({
+        hotelId: this.hotelId,
+        reservationId: this.reservationId,
+        folioIds,
+        amount: this.totalFolioAmount
+      })
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            this.paymentLink = response.data.paymentUrl;
+            this.generateQrCode(this.paymentLink);
+            this.showPaymentModal = true;
+          }
+        },
+        error: (error) => {
+          alert(error.error?.message || 'Failed to generate payment link');
+        }
+      });
   }
 
-  // Common modal methods
+  /* ---------------- Common ---------------- */
+
   private generateQrCode(link: string): void {
-    this.qrCode = `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(link)}`;
+    this.qrCode =
+      'https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=' +
+      encodeURIComponent(link);
   }
 
   closeModal(): void {

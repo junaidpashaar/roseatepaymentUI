@@ -1,5 +1,6 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, Input } from '@angular/core';
 import { ReservationService } from '../../services/reservation.service';
+import { PaymentService } from '../../services/payment.service';
 
 interface DepositPolicy {
   revenueType: string;
@@ -16,6 +17,9 @@ interface DepositPolicy {
   styleUrls: ['./deposit.component.css']
 })
 export class DepositComponent implements OnInit {
+  @Input() hotelId: string = '';
+  @Input() reservationId: string = '';
+
   depositPolicies: DepositPolicy[] = [];
   selectAll: boolean = false;
   totalAmount: number = 0;
@@ -24,7 +28,10 @@ export class DepositComponent implements OnInit {
   paymentLink: string = '';
   qrCode: string = '';
 
-  constructor(private reservationService: ReservationService) {}
+  constructor(
+    private reservationService: ReservationService,
+    private paymentService: PaymentService
+  ) {}
 
   ngOnInit(): void {
     this.loadDepositData();
@@ -39,7 +46,7 @@ export class DepositComponent implements OnInit {
         this.depositPolicies = policies.map((policy: any) => {
           const amountDue = policy.amountDue?.amount || 0;
           const disabled = amountDue <= 0;
-          
+
           return {
             revenueType: policy.revenueType || 'N/A',
             deadline: this.formatDate(policy.policy?.deadline?.absoluteDeadline),
@@ -107,14 +114,32 @@ export class DepositComponent implements OnInit {
       return;
     }
 
-    const selectedPolicies = this.depositPolicies
+    const selectedPolicyIds = this.depositPolicies
       .filter(p => p.selected && !p.disabled)
       .map(p => p.policyId)
       .join(',');
 
-    this.paymentLink = `https://payment.evolveback.com/payment?policies=${selectedPolicies}&amount=${this.totalAmount}`;
-    this.generateQrCode(this.paymentLink);
-    this.showPaymentModal = true;
+    this.loading = true;
+
+    this.paymentService.generateDepositPaymentLink({
+      hotelId: this.hotelId,
+      reservationId: this.reservationId,
+      policyIds: selectedPolicyIds,
+      amount: this.totalAmount
+    }).subscribe({
+      next: (response) => {
+        this.loading = false;
+        if (response.success && response.data) {
+          this.paymentLink = response.data.paymentUrl;
+          this.generateQrCode(this.paymentLink);
+          this.showPaymentModal = true;
+        }
+      },
+      error: (error) => {
+        this.loading = false;
+        alert(error.error?.message || 'Failed to generate payment link');
+      }
+    });
   }
 
   private generateQrCode(link: string): void {

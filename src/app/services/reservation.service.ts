@@ -1,6 +1,6 @@
-// src/app/services/reservation.service.ts
+// src/app/services/reservation.service.ts (Angular - Updated)
 import { Injectable } from '@angular/core';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Observable, BehaviorSubject } from 'rxjs';
 import { tap } from 'rxjs/operators';
 import { environment } from '../../environments/environment';
@@ -17,6 +17,11 @@ export interface DepositFolioData {
   links: any[];
 }
 
+export interface CompleteReservationData {
+  reservation: ReservationData;
+  depositFolio: DepositFolioData;
+}
+
 @Injectable({
   providedIn: 'root'
 })
@@ -29,30 +34,58 @@ export class ReservationService {
 
   constructor(private http: HttpClient) {}
 
-  private getHeaders(hotelId: string): HttpHeaders {
-    return new HttpHeaders({
-      'Content-Type': 'application/json',
-      'x-hotelid': hotelId,
-      'x-app-key': environment.appKey
-    });
-  }
-
-  getReservation(hotelId: string, reservationId: string): Observable<ReservationData> {
-    const url = `${environment.apiUrl}/rsv/v1/hotels/${hotelId}/reservations/${reservationId}?fetchInstructions=Reservation`;
-    const headers = this.getHeaders(hotelId);
-
-    return this.http.get<ReservationData>(url, { headers }).pipe(
-      tap(data => this.reservationDataSubject.next(data))
+  /**
+   * Get reservation details from backend
+   */
+  getReservation(hotelId: string, reservationId: string): Observable<any> {
+    const url = `${environment.apiUrl}/reservation/${hotelId}/${reservationId}`;
+    
+    return this.http.get<any>(url).pipe(
+      tap(response => {
+        if (response.success && response.data) {
+          this.reservationDataSubject.next(response.data);
+        }
+      })
     );
   }
 
-  getDepositFolio(hotelId: string, reservationId: string): Observable<DepositFolioData> {
-    const url = `${environment.apiUrl}/csh/v1/hotels/${hotelId}/depositFolio?id=${reservationId}&fetchInstructions=ProjectedRevenue`;
-    const headers = this.getHeaders(hotelId);
-
-    return this.http.get<DepositFolioData>(url, { headers }).pipe(
-      tap(data => this.depositFolioDataSubject.next(data))
+  /**
+   * Get deposit folio details from backend
+   */
+  getDepositFolio(hotelId: string, reservationId: string): Observable<any> {
+    const url = `${environment.apiUrl}/reservation/${hotelId}/${reservationId}/deposit-folio`;
+    
+    return this.http.get<any>(url).pipe(
+      tap(response => {
+        if (response.success && response.data) {
+          this.depositFolioDataSubject.next(response.data);
+        }
+      })
     );
+  }
+
+  /**
+   * Get complete reservation data (reservation + deposit folio) in one call
+   */
+  getCompleteReservationData(hotelId: string, reservationId: string): Observable<any> {
+    const url = `${environment.apiUrl}/reservation/${hotelId}/${reservationId}/complete`;
+    
+    return this.http.get<any>(url).pipe(
+      tap(response => {
+        if (response.success && response.data) {
+          this.reservationDataSubject.next(response.data.reservation);
+          this.depositFolioDataSubject.next(response.data.depositFolio);
+        }
+      })
+    );
+  }
+
+  /**
+   * Validate reservation status
+   */
+  validateReservation(hotelId: string, reservationId: string): Observable<any> {
+    const url = `${environment.apiUrl}/reservation/${hotelId}/${reservationId}/validate`;
+    return this.http.get<any>(url);
   }
 
   getStoredReservationData(): ReservationData | null {
