@@ -137,7 +137,7 @@ export class ReservationComponent implements OnInit {
       checkIn: this.formatDate(roomStay?.arrivalDate),
       checkOut: this.formatDate(roomStay?.departureDate),
       amount: this.formatAmount(roomStay?.total?.amountBeforeTax || 0),
-      status
+      status: this.reservationStatus
     };
 
     // Optional: assign folio list if backend sends it
@@ -203,12 +203,19 @@ export class ReservationComponent implements OnInit {
   /* ---------------- Folio Payment ---------------- */
 
   toggleSelectAllFolios(): void {
-    this.folioList.forEach(f => (f.selected = this.selectAllFolios));
+    // Only toggle payable (non-disabled) folios
+    this.folioList.forEach(f => {
+      if (!f.disabled) {
+        f.selected = this.selectAllFolios;
+      }
+    });
     this.calculateTotalFolioAmount();
   }
 
   onSingleFolioSelect(): void {
-    this.selectAllFolios = this.folioList.every(f => f.selected);
+    // Check if all payable folios are selected
+    const payableFolios = this.folioList.filter(f => !f.disabled);
+    this.selectAllFolios = payableFolios.length > 0 && payableFolios.every(f => f.selected);
     this.calculateTotalFolioAmount();
   }
 
@@ -222,36 +229,36 @@ export class ReservationComponent implements OnInit {
       .reduce((sum, item) => sum + Number(item.balance?.amount || 0), 0);
   }
 
-generateFolioPaymentLink(): void {
-  const selectedFolios = this.folioList.filter(f => f.selected && !f.disabled);
+  generateFolioPaymentLink(): void {
+    const selectedFolios = this.folioList.filter(f => f.selected && !f.disabled);
 
-  if (selectedFolios.length === 0) {
-    alert('Please select at least one folio');
-    return;
-  }
+    if (selectedFolios.length === 0) {
+      alert('Please select at least one folio');
+      return;
+    }
 
-  const folioIds = selectedFolios.map(f => f.folioWindowNo).join(',');
+    const folioIds = selectedFolios.map(f => f.folioWindowNo).join(',');
 
-  this.paymentService
-    .generateFolioPaymentLink({
-      hotelId: this.hotelId,
-      reservationId: this.reservationId,
-      folioIds,
-      amount: this.totalFolioAmount
-    })
-    .subscribe({
-      next: (response) => {
-        if (response.success && response.data) {
-          this.paymentLink = response.data.short_url;
-          this.generateQrCode(this.paymentLink);
-          this.showPaymentModal = true;
+    this.paymentService
+      .generateFolioPaymentLink({
+        hotelId: this.hotelId,
+        reservationId: this.reservationId,
+        folioIds,
+        amount: this.totalFolioAmount
+      })
+      .subscribe({
+        next: (response) => {
+          if (response.success && response.data) {
+            this.paymentLink = response.data.short_url;
+            this.generateQrCode(this.paymentLink);
+            this.showPaymentModal = true;
+          }
+        },
+        error: (error) => {
+          alert(error.error?.message || 'Failed to generate payment link');
         }
-      },
-      error: (error) => {
-        alert(error.error?.message || 'Failed to generate payment link');
-      }
-    });
-}
+      });
+  }
 
   loadFolioData(): void {
     this.loading = true;
@@ -262,20 +269,26 @@ generateFolioPaymentLink(): void {
           const folios: FolioWindow[] = response?.data?.reservationFolioInformation?.folioWindows || [];
 
           // Add selected flag and disabled flag
+          // AUTO-SELECT all payable folios by default
           this.folioList = folios.map((f: any, index: number) => {
             const firstFolio = f.folios?.[0];
             const firstPosting = firstFolio?.postings?.[0];
+            const isDisabled = !((f.balance?.amount ?? 0) > 0);
 
             return {
               ...f,
               rowId: index + 1,
-              selected: false,
-              disabled: !((f.balance?.amount ?? 0) > 0), 
+              selected: !isDisabled, // Auto-select if not disabled (i.e., if payable)
+              disabled: isDisabled, 
               balanceAmount: f.balance?.amount ?? 0,
               paymentAmount: f.payment?.amount ?? 0,
               reference: firstPosting?.reference || '-'
             };
           });
+
+          // Check if all payable folios are selected (which they will be initially)
+          const payableFolios = this.folioList.filter(f => !f.disabled);
+          this.selectAllFolios = payableFolios.length > 0 && payableFolios.every(f => f.selected);
 
           this.calculateTotalFolioAmount();
           this.loading = false;
