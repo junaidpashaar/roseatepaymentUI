@@ -222,36 +222,36 @@ export class ReservationComponent implements OnInit {
       .reduce((sum, item) => sum + Number(item.balance?.amount || 0), 0);
   }
 
-  generateFolioPaymentLink(): void {
-    const selectedFolios = this.folioList.filter(f => f.selected);
+generateFolioPaymentLink(): void {
+  const selectedFolios = this.folioList.filter(f => f.selected && !f.disabled);
 
-    if (selectedFolios.length === 0) {
-      alert('Please select at least one folio');
-      return;
-    }
-
-    const folioIds = selectedFolios.map(f => f.folioNo).join(',');
-
-    this.paymentService
-      .generateFolioPaymentLink({
-        hotelId: this.hotelId,
-        reservationId: this.reservationId,
-        folioIds,
-        amount: this.totalFolioAmount
-      })
-      .subscribe({
-        next: (response) => {
-          if (response.success && response.data) {
-            this.paymentLink = response.data.short_url;
-            this.generateQrCode(this.paymentLink);
-            this.showPaymentModal = true;
-          }
-        },
-        error: (error) => {
-          alert(error.error?.message || 'Failed to generate payment link');
-        }
-      });
+  if (selectedFolios.length === 0) {
+    alert('Please select at least one folio');
+    return;
   }
+
+  const folioIds = selectedFolios.map(f => f.folioWindowNo).join(',');
+
+  this.paymentService
+    .generateFolioPaymentLink({
+      hotelId: this.hotelId,
+      reservationId: this.reservationId,
+      folioIds,
+      amount: this.totalFolioAmount
+    })
+    .subscribe({
+      next: (response) => {
+        if (response.success && response.data) {
+          this.paymentLink = response.data.short_url;
+          this.generateQrCode(this.paymentLink);
+          this.showPaymentModal = true;
+        }
+      },
+      error: (error) => {
+        alert(error.error?.message || 'Failed to generate payment link');
+      }
+    });
+}
 
   loadFolioData(): void {
     this.loading = true;
