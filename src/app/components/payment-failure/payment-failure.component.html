@@ -1,0 +1,13 @@
+<div class="modal-overlay" *ngIf="showModal" (click)="closeModal()">
+  <div class="modal-content" (click)="$event.stopPropagation()">
+    <div class="failure-icon"> 
+    </div>
+    
+    <h2>Payment Failed</h2>
+    <p>We couldn't process your payment.</p>
+    <p class="error-info">Please check your payment details and try again.</p>
+  
+    
+    <button class="close-btn" (click)="closeModal()">&times;</button>
+  </div>
+</div>

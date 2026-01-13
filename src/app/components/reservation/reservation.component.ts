@@ -70,7 +70,7 @@ export class ReservationComponent implements OnInit {
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.hotelId = params['hotelID'] || '';
-      this.reservationId = params['reservationId'] || '';
+      this.reservationId = params['reservationID'] || '';
 
       if (!this.hotelId || !this.reservationId) {
         this.errorMessage = 'Invalid Link: Missing hotel ID or reservation ID';
@@ -113,7 +113,7 @@ export class ReservationComponent implements OnInit {
 
     const res = data.reservations.reservation[0];
     this.reservationStatus = res.reservationStatus;
-
+    
     if (this.reservationStatus === 'Cancel' || this.reservationStatus === 'Cancelled') {
       this.errorMessage = 'Invalid Reservation: This reservation has been cancelled';
       return;
