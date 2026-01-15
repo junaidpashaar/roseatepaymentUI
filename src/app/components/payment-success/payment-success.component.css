@@ -1,0 +1,348 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+  background: linear-gradient(135deg, #ffffff 0%, #f9fafb 100%);
+  border-radius: 20px;
+  padding: 48px 40px;
+  max-width: 520px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+  animation: slideUp 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+/* Success Icon Animation */
+.success-icon-wrapper {
+  position: relative;
+  display: inline-block;
+  margin-bottom: 28px;
+}
+
+.success-icon {
+  position: relative;
+  z-index: 2;
+  animation: scaleIn 0.6s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.success-circle {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(16, 185, 129, 0.2) 0%, rgba(16, 185, 129, 0) 70%);
+  animation: pulse 2s infinite;
+}
+
+/* Headings */
+h2 {
+  color: #10B981;
+  font-size: 32px;
+  margin-bottom: 12px;
+  font-weight: 700;
+  letter-spacing: -0.5px;
+}
+
+.success-subtitle {
+  color: #6B7280;
+  font-size: 16px;
+  margin-bottom: 28px;
+  font-weight: 400;
+}
+
+/* Payment Details Card */
+.payment-details {
+  background: white;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 24px 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #E5E7EB;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #F3F4F6;
+}
+
+.detail-row:last-child {
+  border-bottom: none;
+}
+
+.detail-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: #6B7280;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.detail-label svg {
+  color: #9CA3AF;
+}
+
+.detail-value {
+  color: #111827;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  word-break: break-all;
+}
+
+.detail-value.clickable {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #10B981;
+  transition: all 0.3s ease;
+}
+
+.detail-value.clickable:hover {
+  color: #059669;
+  transform: scale(1.02);
+}
+
+.detail-value.clickable svg {
+  opacity: 0.6;
+  transition: opacity 0.3s ease;
+}
+
+.detail-value.clickable:hover svg {
+  opacity: 1;
+}
+
+.signature-row {
+  background-color: #F9FAFB;
+  padding: 16px 12px;
+  border-radius: 8px;
+  margin-top: 8px;
+}
+
+.signature-value {
+  font-size: 12px;
+  color: #6B7280;
+  max-width: 200px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.status-completed {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: #10B981 !important;
+  font-family: inherit;
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  background-color: #10B981;
+  border-radius: 50%;
+  animation: blink 2s infinite;
+}
+
+/* Confirmation Box */
+.confirmation-box {
+  background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+  border: 1px solid #A7F3D0;
+  border-radius: 12px;
+  padding: 16px;
+  margin: 24px 0;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+}
+
+.confirmation-box svg {
+  flex-shrink: 0;
+}
+
+.confirmation-box p {
+  color: #065F46;
+  font-size: 13px;
+  margin: 0;
+  line-height: 1.5;
+  font-weight: 500;
+}
+
+/* Action Buttons */
+.button-group {
+  display: flex;
+  gap: 12px;
+  margin-top: 28px;
+  flex-wrap: wrap;
+}
+
+.btn {
+  flex: 1;
+  min-width: 140px;
+  padding: 14px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
+  color: white;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(16, 185, 129, 0.4);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.btn-secondary {
+  background: white;
+  color: #374151;
+  border: 2px solid #E5E7EB;
+}
+
+.btn-secondary:hover {
+  background: #F9FAFB;
+  border-color: #D1D5DB;
+}
+
+/* Close Button */
+.close-btn {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: #F3F4F6;
+  border: none;
+  font-size: 28px;
+  color: #6B7280;
+  cursor: pointer;
+  line-height: 1;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.close-btn:hover {
+  background: #E5E7EB;
+  color: #374151;
+  transform: rotate(90deg);
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0;
+    transform: translateY(40px) scale(0.95);
+  }
+  to { 
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes scaleIn {
+  0% { 
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% { 
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1.1);
+  }
+}
+
+@keyframes blink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Responsive Design */
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 36px 24px;
+    border-radius: 16px;
+  }
+  
+  h2 {
+    font-size: 26px;
+  }
+  
+  .button-group {
+    flex-direction: column;
+  }
+  
+  .btn {
+    width: 100%;
+  }
+  
+  .detail-row {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  
+  .detail-value {
+    font-size: 13px;
+  }
+}

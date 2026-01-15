@@ -115,7 +115,7 @@
   width: 30%;
   margin-top: 18px;
   padding: 12px;
-  background: #e9926f;
+  background: #89817d;
   color: #ffffff;
   border: none;
   font-size: 16px;
@@ -127,13 +127,13 @@
 }
 
 .generate-btn:hover:not(:disabled) {
-  background: #d17a54;
+  background: #2c2826;
   transform: translateY(-2px);
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
 }
 
 .generate-btn:disabled {
-  background: #ffbfa5;
+  background: #89817d;
   cursor: not-allowed;
   opacity: 0.6;
 }
