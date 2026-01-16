@@ -8,19 +8,24 @@ import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { DepositComponent } from './components/deposit/deposit.component';
 import { ReservationComponent } from './components/reservation/reservation.component';
+import { CommonModule } from '@angular/common';
+import { PaymentFailureComponent } from './components/payment-failure/payment-failure.component';
+import { PaymentSuccessComponent } from './components/payment-success/payment-success.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DepositComponent,
-    ReservationComponent
-    // Add other components here
+    ReservationComponent,
+    PaymentSuccessComponent,
+    PaymentFailureComponent
   ],
   imports: [
     BrowserModule,
     AppRoutingModule,
     FormsModule,
-    HttpClientModule
+    HttpClientModule,
+    CommonModule
   ],
   providers: [],
   bootstrap: [AppComponent]

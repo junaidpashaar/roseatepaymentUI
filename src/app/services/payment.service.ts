@@ -79,4 +79,13 @@ export class PaymentService {
     const url = `${environment.apiUrl}/reservation/${hotelId}/${reservationId}/checkout-folio`;
     return this.http.get(url);
   }
+
+  
+  /**
+   * Generate Transaction payment
+   */
+  getTransactionByPaymentId(paymentId: string): Observable<any> {
+      const url = `${environment.apiUrl}/payment/links/${paymentId}/transactions`;
+      return this.http.get(url);
+  }
 }
