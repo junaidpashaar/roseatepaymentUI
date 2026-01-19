@@ -12,6 +12,7 @@ import { CommonModule } from '@angular/common';
 import { PaymentFailureComponent } from './components/payment-failure/payment-failure.component';
 import { PaymentSuccessComponent } from './components/payment-success/payment-success.component';
 import { PaymentLinkComponent } from './components/payment-link/payment-link.component';
+import { SafePipe } from './services/safe.pipe';
 
 @NgModule({
   declarations: [
@@ -20,7 +21,8 @@ import { PaymentLinkComponent } from './components/payment-link/payment-link.com
     ReservationComponent,
     PaymentSuccessComponent,
     PaymentFailureComponent,
-    PaymentLinkComponent
+    PaymentLinkComponent,
+    SafePipe
   ],
   imports: [
     BrowserModule,

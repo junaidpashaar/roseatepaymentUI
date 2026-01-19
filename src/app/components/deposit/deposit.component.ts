@@ -1,6 +1,7 @@
 import { Component, OnInit, Input } from '@angular/core';
 import { ReservationService } from '../../services/reservation.service';
 import { PaymentService } from '../../services/payment.service';
+import { environment } from 'src/environments/environment';
 
 interface DepositPolicy {
   revenueType: string;
@@ -138,7 +139,7 @@ export class DepositComponent implements OnInit {
       next: (response) => {
         this.loading = false;
         if (response.success && response.data) {
-          this.paymentLink = response.data.short_url;
+          this.paymentLink = `${environment.paymentLink}`+'?paymentLinkId='+response?.data?.payment_link_id;
           this.generateQrCode(this.paymentLink);
           this.showPaymentModal = true;
         }

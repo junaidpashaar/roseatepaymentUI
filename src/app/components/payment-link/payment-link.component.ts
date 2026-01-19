@@ -3,49 +3,26 @@ import { Router, ActivatedRoute } from '@angular/router';
 import { PaymentService } from 'src/app/services/payment.service';
 import { ReservationService } from 'src/app/services/reservation.service';
 
-interface TransactionData {
+interface PaymentLinkData {
   id: number;
-  payment_link_id: string | null;
-  payment_id: string;
-  order_id: string;
-  signature: string | null;
+  payment_link_id: string;
+  customer_name: string;
+  customer_email: string | null;
+  customer_phone: string | null;
   amount: string;
   currency: string;
+  description: string | null;
+  short_url: string;
   status: string;
-  method: string;
-  email: string;
-  contact: string;
-  webhook_payload: {
-    payload: {
-      payment: {
-        entity: {
-          notes: {
-            info: string;
-            hotelId: string;
-            reservationId: string;
-          };
-          bank: string;
-          created_at: number;
-          fee: number;
-          tax: number;
-        };
-      };
-    };
-  };
   created_at: string;
-}
-
-interface TransactionResponse {
-  success: boolean;
-  count: number;
-  data: TransactionData[];
-}
-
-interface PaymentInfo {
+  updated_at: string;
   hotelId: string;
   reservationId: string;
-  amount: number;
-  description: string;
+}
+
+interface PaymentLinkResponse {
+  success: boolean;
+  data: PaymentLinkData;
 }
 
 interface ReservationData {
@@ -58,6 +35,8 @@ interface ReservationData {
   checkOut: string;
   amount: string;
   status: string;
+  roomType?: string;
+  nights?: number;
 }
 
 @Component({
@@ -67,27 +46,18 @@ interface ReservationData {
 })
 export class PaymentLinkComponent implements OnInit {
   
-  // Razorpay payment details from URL
-  paymentId: string = '';
+  // Payment link data
   paymentLinkId: string = '';
-  paymentLinkReferenceId: string = '';
-  paymentStatus: string = '';
-  signature: string = '';
-
-  // Transaction details from API
-  transactionData: TransactionData | null = null;
-  paymentInfo: any | null = null;
+  paymentLinkData: PaymentLinkData | null = null;
   
   // Reservation details
-  hotelId: string = '';
-  reservationId: string = '';
   reservation: ReservationData | null = null;
-  reservationStatus: string = '';
-  isValidReservation: boolean = false;
   
   // UI state
   isLoading: boolean = true;
   errorMessage: string = '';
+  showPaymentFrame: boolean = false;
+  paymentCompleted: boolean = false;
 
   constructor(
     private router: Router,
@@ -97,87 +67,75 @@ export class PaymentLinkComponent implements OnInit {
   ) {}
 
   ngOnInit(): void { 
-    this.extractPaymentDetails();
-    this.fetchTransactionDetails();
+    this.extractPaymentLinkId();
+    this.fetchPaymentLinkDetails();
+    this.setupPaymentListener();
   }
 
-  extractPaymentDetails(): void {
+  extractPaymentLinkId(): void {
     this.route.queryParams.subscribe(params => {
-      this.paymentId = params['razorpay_payment_id'] || this.generateTransactionId();
-      this.paymentLinkId = params['razorpay_payment_link_id'] || '';
-      this.paymentLinkReferenceId = params['razorpay_payment_link_reference_id'] || 'N/A';
-      this.paymentStatus = params['razorpay_payment_link_status'] || 'completed';
-      this.signature = params['razorpay_signature'] || '';
+      this.paymentLinkId = params['paymentLinkId'] || '';
     });
   }
 
-  fetchTransactionDetails(): void {
-    if (!this.paymentId) {
+  setupPaymentListener(): void {
+    // Listen for messages from Razorpay iframe
+    window.addEventListener('message', (event) => {
+      // Check if message is from Razorpay
+      if (event.data && typeof event.data === 'string') {
+        try {
+          const data = JSON.parse(event.data);
+          if (data.event === 'payment.success' || data.razorpay_payment_id) {
+            this.handlePaymentSuccess(data);
+          }
+        } catch (e) {
+          // Not a JSON message, ignore
+        }
+      }
+    });
+  }
+
+  fetchPaymentLinkDetails(): void {
+    if (!this.paymentLinkId) {
+      this.errorMessage = 'Payment link ID not found';
       this.isLoading = false;
-      this.errorMessage = 'Payment ID not found';
       return;
     }
     
-    this.paymentService.getTransactionByPaymentLink(this.paymentId).subscribe({
-      next: (response: TransactionResponse) => {
-        if (response.success && response.data && response.data.length > 0) {
-          this.transactionData = response.data[0];
-          this.parsePaymentInfo();
-          // Fetch reservation data after getting payment info
-          if (this.hotelId && this.reservationId) {
-            this.fetchReservationDetails();
-          } else {
-            this.isLoading = false;
-          }
+    this.paymentService.getTransactionByPaymentLink(this.paymentLinkId).subscribe({
+      next: (response: PaymentLinkResponse) => {
+        if (response.success && response.data) {
+          this.paymentLinkData = response.data;
+          
+          // Fetch reservation details
+          this.fetchReservationDetails(
+            response.data.hotelId, 
+            response.data.reservationId
+          );
         } else {
+          this.errorMessage = 'Payment link not found';
           this.isLoading = false;
-          this.errorMessage = 'No transaction data found';
         }
       },
       error: (error) => {
+        this.errorMessage = 'Failed to load payment link details';
         this.isLoading = false;
-        this.errorMessage = 'Failed to fetch transaction details';
-        console.error('Error fetching transaction:', error);
+        console.error('Error fetching payment link:', error);
       }
     });
   }
 
-  parsePaymentInfo(): void {
-    if (this.transactionData?.webhook_payload?.payload?.payment?.entity?.notes?.info) {
-      try {
-        const infoString = this.transactionData.webhook_payload.payload.payment.entity.notes.info;
-        this.paymentInfo = JSON.parse(infoString);
-        
-        // Extract hotelId and reservationId
-        this.hotelId = this.paymentInfo.hotelId;
-        this.reservationId = this.paymentInfo.reservationId;
-      } catch (error) {
-        console.error('Error parsing payment info:', error);
-        // Fallback: extract from notes directly
-        const notes = this.transactionData.webhook_payload.payload.payment.entity.notes;
-        this.hotelId = notes.hotelId || '';
-        this.reservationId = notes.reservationId || '';
-        this.paymentInfo = {
-          hotelId: this.hotelId,
-          reservationId: this.reservationId,
-          amount: 0,
-          description: 'Adhoc payment'
-        };
-      }
-    }
-  }
-
-  fetchReservationDetails(): void {
+  fetchReservationDetails(hotelId: string, reservationId: string): void {
     this.reservationService
-      .getCompleteReservationData(this.hotelId, this.reservationId)
+      .getCompleteReservationData(hotelId, reservationId)
       .subscribe({
         next: (response) => {
           if (response.success && response.data) {
             this.processReservationData(response.data.reservation);
           } else {
             this.errorMessage = 'Reservation not found';
+            this.isLoading = false;
           }
-          this.isLoading = false;
         },
         error: (error) => {
           this.errorMessage = error.error?.message || 'Failed to load reservation data';
@@ -190,44 +148,53 @@ export class PaymentLinkComponent implements OnInit {
   processReservationData(data: any): void {
     if (!data?.reservations?.reservation?.[0]) {
       this.errorMessage = 'Reservation not found';
+      this.isLoading = false;
       return;
     }
 
     const res = data.reservations.reservation[0];
-    this.reservationStatus = res.reservationStatus;
+    const reservationStatus = res.reservationStatus;
     
-    if (this.reservationStatus === 'Cancel' || this.reservationStatus === 'Cancelled') {
-      this.errorMessage = 'Invalid Reservation: This reservation has been cancelled';
+    // Check if reservation is cancelled
+    if (reservationStatus === 'Cancel' || reservationStatus === 'Cancelled') {
+      this.errorMessage = 'This reservation has been cancelled and cannot accept payments';
+      this.isLoading = false;
       return;
     }
 
-    this.isValidReservation = true;
-
-    const guest =
-      res.reservationGuests?.[0]?.profileInfo?.profile?.customer?.personName?.[0];
+    const guest = res.reservationGuests?.[0]?.profileInfo?.profile?.customer?.personName?.[0];
     const roomStay = res.roomStay;
     const resIds = res.reservationIdList || [];
+
+    // Calculate nights
+    const checkInDate = new Date(roomStay?.arrivalDate);
+    const checkOutDate = new Date(roomStay?.departureDate);
+    const nights = Math.ceil((checkOutDate.getTime() - checkInDate.getTime()) / (1000 * 60 * 60 * 24));
 
     this.reservation = {
       resNo: resIds.find((id: any) => id.type === 'Reservation')?.id || '',
       confirmationNo: resIds.find((id: any) => id.type === 'Confirmation')?.id || '',
-      guest: guest
-        ? `${guest.givenName || ''} ${guest.surname || ''}`.trim()
-        : '',
-      email: '',
-      mobile: '',
+      guest: guest ? `${guest.givenName || ''} ${guest.surname || ''}`.trim() : '',
+      email: res.reservationGuests?.[0]?.profileInfo?.profile?.customer?.email?.[0]?.value || '',
+      mobile: res.reservationGuests?.[0]?.profileInfo?.profile?.customer?.telephone?.[0]?.phoneNumber || '',
       checkIn: this.formatDate(roomStay?.arrivalDate),
       checkOut: this.formatDate(roomStay?.departureDate),
       amount: this.formatAmount(roomStay?.total?.amountBeforeTax || 0),
-      status: this.reservationStatus
+      status: reservationStatus,
+      roomType: roomStay?.roomTypes?.[0]?.roomType || 'Standard Room',
+      nights: nights
     };
-    console.log("this.reservation",this.reservation);
+
+    // All validations passed, show payment frame
+    this.isLoading = false;
+    this.showPaymentFrame = true;
   }
 
   formatDate(dateString: string): string {
     if (!dateString) return 'N/A';
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { 
+      weekday: 'short',
       month: 'short', 
       day: 'numeric', 
       year: 'numeric' 
@@ -235,91 +202,26 @@ export class PaymentLinkComponent implements OnInit {
   }
 
   formatAmount(amount: number): string {
-    return amount.toFixed(2);
-  }
-
-  generateTransactionId(): string {
-    return 'TXN' + Math.random().toString(36).substr(2, 9).toUpperCase();
-  }
-
-  getCurrentTime(): string {
-    const now = new Date();
-    return now.toLocaleString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric',
-      hour: '2-digit', 
-      minute: '2-digit'
+    return amount.toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     });
   }
 
-  getTransactionTime(): string {
-    if (!this.transactionData?.webhook_payload?.payload?.payment?.entity?.created_at) {
-      return this.getCurrentTime();
-    }
-    
-    const timestamp = this.transactionData.webhook_payload.payload.payment.entity.created_at;
-    const date = new Date(timestamp * 1000);
-    
-    return date.toLocaleString('en-US', { 
-      month: 'short', 
-      day: 'numeric', 
-      year: 'numeric',
-      hour: '2-digit', 
-      minute: '2-digit'
+  getPaymentAmount(): string {
+    if (!this.paymentLinkData?.amount) return '0.00';
+    const amount = parseFloat(this.paymentLinkData.amount);
+    return amount.toLocaleString('en-IN', {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
     });
   }
 
-  getFormattedAmount(): string {
-    if (!this.transactionData?.amount) return '0.00';
-    
-    const amount = parseFloat(this.transactionData.amount);
-    return amount.toFixed(2);
-  }
-
-  getPaymentMethod(): string {
-    return this.transactionData?.method?.toUpperCase() || 'N/A';
-  }
-
-  getBankName(): string {
-    return this.transactionData?.webhook_payload?.payload?.payment?.entity?.bank || 'N/A';
-  }
-
-  getTransactionFee(): string {
-    const fee = this.transactionData?.webhook_payload?.payload?.payment?.entity?.fee;
-    if (!fee) return '0.00';
-    return (fee / 100).toFixed(2);
-  }
-
-  getStatusClass(): string {
-    const status = this.transactionData?.status || this.paymentStatus;
-    return status === 'paid' || status === 'captured' ? 'status-completed' : 'status-pending';
-  }
-
-  getStatusText(): string {
-    const status = this.transactionData?.status || this.paymentStatus;
-    return status === 'paid' || status === 'captured' ? 'Completed' : 'Pending';
-  }
-
-  copyToClipboard(text: string | undefined | null): void {
-    if (!text) return;
-    
-    navigator.clipboard.writeText(text).then(() => {
-      alert('Copied to clipboard!');
-    }).catch(err => {
-      console.error('Failed to copy:', err);
-    });
+  handlePaymentSuccess(data: any): void {
+    this.paymentCompleted = true; 
   }
 
   goToHome(): void {
-    this.router.navigate(['/']);
-  }
-
-  downloadReceipt(): void {
-    console.log('Downloading receipt for payment:', this.paymentId);
-  }
-
-  closeModal(): void {
     this.router.navigate(['/']);
   }
 }

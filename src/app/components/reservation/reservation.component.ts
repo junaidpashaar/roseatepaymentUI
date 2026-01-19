@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { ReservationService } from '../../services/reservation.service';
 import { PaymentService } from '../../services/payment.service';
+import { environment } from 'src/environments/environment';
 
 /**
  * Folio window interface for type safety
@@ -189,7 +190,7 @@ export class ReservationComponent implements OnInit {
       .subscribe({
         next: (response) => {
           if (response.success && response.data) {
-            this.paymentLink = response.data.short_url;
+            this.paymentLink = `${environment.paymentLink}`+'?paymentLinkId='+response?.data?.payment_link_id;
             this.generateQrCode(this.paymentLink);
             this.showPaymentModal = true;
           }
@@ -249,7 +250,7 @@ export class ReservationComponent implements OnInit {
       .subscribe({
         next: (response) => {
           if (response.success && response.data) {
-            this.paymentLink = response.data.short_url;
+            this.paymentLink = `${environment.paymentLink}`+'?paymentLinkId='+response?.data?.payment_link_id;
             this.generateQrCode(this.paymentLink);
             this.showPaymentModal = true;
           }
