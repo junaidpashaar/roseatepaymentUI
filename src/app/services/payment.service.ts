@@ -15,18 +15,21 @@ export interface DepositPaymentRequest extends PaymentLinkRequest {
   hotelId: string;
   reservationId: string;
   type: string;
+  guestName?: string;
 }
 
 export interface AdhocPaymentRequest extends PaymentLinkRequest {
   description?: string;
   hotelId: string;
   reservationId: string;
+  guestName?: string;
 }
 
 export interface FolioPaymentRequest extends PaymentLinkRequest {
   folioIds: string;
   hotelId: string;
   reservationId: string;
+  guestName?: string;
 }
 
 export interface PaymentLinkResponse {

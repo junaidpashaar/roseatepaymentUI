@@ -1,17 +1,18 @@
+/* PAGE LAYOUT */
 .payment-page {
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
-  padding: 20px;
+  font-family: 'Lato', sans-serif;
+  background: #fdf5f1;
 }
 
-/* Loading State */
+/* LOADING STATE */
 .loading-container {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   min-height: 100vh;
-  text-align: center;
+  gap: 20px;
 }
 
 .spinner {
@@ -21,7 +22,6 @@
   width: 60px;
   height: 60px;
   animation: spin 1s linear infinite;
-  margin-bottom: 20px;
 }
 
 @keyframes spin {
@@ -29,25 +29,33 @@
   100% { transform: rotate(360deg); }
 }
 
-/* Error State */
+/* ERROR STATE */
 .error-container {
-  max-width: 500px;
-  margin: 100px auto;
-  text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 20px;
+}
+
+.error-box {
   background: white;
   padding: 50px 40px;
-  border-radius: 16px;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.1);
+  border-radius: 15px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  max-width: 500px;
+  width: 100%;
 }
 
 .error-icon {
   margin-bottom: 25px;
 }
 
-.error-title {
-  font-size: 24px;
-  color: #333;
+.error-box h2 {
+  color: #dc3545;
   margin-bottom: 15px;
+  font-size: 24px;
 }
 
 .error-message {
@@ -57,228 +65,27 @@
   line-height: 1.6;
 }
 
-/* Header */
-.payment-header {
-  max-width: 1400px;
-  margin: 0 auto 30px;
-  background: white;
-  padding: 25px 35px;
-  border-radius: 16px;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-}
-
-.brand h1 {
-  font-size: 28px;
-  color: #2c2826;
-  margin: 0 0 10px 0;
-  font-family: "Cormorant Garamond", serif;
-}
-
-.security-badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  background: #10B981;
-  color: white;
-  padding: 6px 16px;
-  border-radius: 20px;
-  font-size: 13px;
-  font-weight: 500;
-}
-
-.security-badge svg {
-  width: 16px;
-  height: 16px;
-}
-
-/* Main Content Grid */
+/* PAYMENT CONTAINER */
 .payment-container {
-  max-width: 1400px;
-  margin: 0 auto;
+  width: 100%;
+  height: 100vh;
 }
 
-.content-grid {
-  display: grid;
-  grid-template-columns: 1fr 1.2fr;
-  gap: 30px;
-  align-items: start;
-}
-
-/* Card Styles */
-.card {
-  background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  margin-bottom: 20px;
-}
-
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 20px 25px;
-  background: linear-gradient(135deg, #e9926f 0%, #d67d55 100%);
-  color: white;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.card-header h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-}
-
-.card-content {
-  padding: 25px;
-}
-
-/* Info Sections */
-.info-section {
-  padding: 15px 0;
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.info-section:last-child {
-  border-bottom: none;
-}
-
-.info-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 10px 0;
-}
-
-.info-row .label {
-  color: #6b7280;
-  font-size: 14px;
-  font-weight: 500;
-}
-
-.info-row .value {
-  color: #1f2937;
-  font-size: 14px;
-  font-weight: 600;
-  text-align: right;
-}
-
-.info-row .value.highlight {
-  color: #e9926f;
-  font-family: monospace;
-  font-size: 15px;
-}
-
-/* Total Section */
-.total-section {
-  margin-top: 20px;
-  padding-top: 20px;
-  border-top: 2px solid #e9926f;
-}
-
-.total-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-
-.total-label {
-  font-size: 16px;
-  font-weight: 600;
-  color: #374151;
-}
-
-.total-value {
-  font-size: 22px;
-  font-weight: 700;
-  color: #10B981;
-}
-
-/* Amount Card */
-.amount-card {
-  background: linear-gradient(135deg, #10B981 0%, #059669 100%);
-  color: white;
-}
-
-.amount-header {
-  padding: 25px;
-  text-align: center;
-}
-
-.amount-label {
-  display: block;
-  font-size: 14px;
-  font-weight: 500;
-  opacity: 0.9;
-  margin-bottom: 10px;
-  text-transform: uppercase;
-  letter-spacing: 1px;
-}
-
-.amount-value {
-  display: block;
-  font-size: 36px;
-  font-weight: 700;
-}
-
-.amount-description {
-  padding: 0 25px 25px;
-  text-align: center;
-  font-size: 14px;
-  opacity: 0.9;
-}
-
-/* Security Notice */
-.security-notice {
-  display: flex;
-  gap: 15px;
-  padding: 18px 20px;
-  background: #f0f9ff;
-  border-left: 4px solid #3b82f6;
-  border-radius: 8px;
-  font-size: 13px;
-  line-height: 1.6;
-  color: #1e40af;
-}
-
-.security-notice svg {
-  flex-shrink: 0;
-  margin-top: 2px;
-}
-
-/* Payment Frame */
+/* PAYMENT FRAME */
 .payment-frame-container {
+  width: 100%;
+  height: 100vh;
   background: white;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
   overflow: hidden;
-  position: sticky;
-  top: 20px;
-}
-
-.payment-frame-header {
-  padding: 25px;
-  background: linear-gradient(135deg, #2c2826 0%, #1a1715 100%);
-  color: white;
-  text-align: center;
-}
-
-.payment-frame-header h3 {
-  margin: 0 0 8px 0;
-  font-size: 20px;
-  font-weight: 600;
-}
-
-.payment-frame-header p {
-  margin: 0;
-  font-size: 14px;
-  opacity: 0.8;
+  display: flex;
+  flex-direction: column;
 }
 
 .iframe-wrapper {
   position: relative;
+  flex: 1;
   width: 100%;
-  height: 700px;
+  height: 100%;
   background: #f9fafb;
 }
 
@@ -289,7 +96,7 @@
   display: block;
 }
 
-/* Success Overlay */
+/* SUCCESS OVERLAY */
 .success-overlay {
   position: absolute;
   top: 0;
@@ -327,6 +134,7 @@
   font-size: 24px;
   color: #10B981;
   margin: 0 0 10px 0;
+  font-family: "Cormorant Garamond", serif;
 }
 
 .success-content p {
@@ -334,7 +142,7 @@
   margin: 0;
 }
 
-/* Button */
+/* BUTTON */
 .btn-primary {
   background: #89817d;
   color: white;
@@ -355,58 +163,17 @@
   box-shadow: 0 6px 16px rgba(44, 40, 38, 0.4);
 }
 
-/* Responsive Design */
-@media (max-width: 1024px) {
-  .content-grid {
-    grid-template-columns: 1fr;
+/* RESPONSIVE DESIGN */
+@media (max-width: 768px) {
+  .error-box {
+    padding: 40px 30px;
   }
-
-  .payment-frame-container {
-    position: static;
+  
+  .error-box h2 {
+    font-size: 20px;
   }
-
-  .iframe-wrapper {
-    height: 600px;
-  }
-}
-
-@media (max-width: 640px) {
-  .payment-page {
-    padding: 10px;
-  }
-
-  .payment-header {
-    padding: 20px;
-  }
-
-  .brand h1 {
-    font-size: 22px;
-  }
-
-  .card-content {
-    padding: 20px;
-  }
-
-  .info-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 5px;
-  }
-
-  .info-row .value {
-    text-align: left;
-  }
-
-  .amount-value {
-    font-size: 28px;
-  }
-
-  .iframe-wrapper {
-    height: 500px;
-  }
-
-  .security-notice {
-    flex-direction: column;
-    gap: 10px;
+  
+  .error-message {
+    font-size: 14px;
   }
 }

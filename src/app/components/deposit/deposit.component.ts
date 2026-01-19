@@ -20,6 +20,7 @@ interface DepositPolicy {
 export class DepositComponent implements OnInit {
   @Input() hotelId: string = '';
   @Input() reservationId: string = '';
+  @Input() reservation: any;
   @Input() type: 'deposit' | 'adhoc' = 'deposit'; // ✅ ADD THIS
 
   depositPolicies: DepositPolicy[] = [];
@@ -134,7 +135,8 @@ export class DepositComponent implements OnInit {
       reservationId: this.reservationId,
       type:this.type,
       policyIds: selectedPolicyIds,
-      amount: this.totalAmount
+      amount: this.totalAmount,
+      guestName:this.reservation?.guest
     }).subscribe({
       next: (response) => {
         this.loading = false;

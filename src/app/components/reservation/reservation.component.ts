@@ -185,7 +185,8 @@ export class ReservationComponent implements OnInit {
         hotelId: this.hotelId,
         reservationId: this.reservationId,
         amount: this.adhocAmount,
-        description: 'Adhoc payment'
+        description: 'Adhoc payment',
+        guestName:this.reservation.guest
       })
       .subscribe({
         next: (response) => {
@@ -245,7 +246,8 @@ export class ReservationComponent implements OnInit {
         hotelId: this.hotelId,
         reservationId: this.reservationId,
         folioIds,
-        amount: this.totalFolioAmount
+        amount: this.totalFolioAmount,
+        guestName:this.reservation.guest
       })
       .subscribe({
         next: (response) => {
