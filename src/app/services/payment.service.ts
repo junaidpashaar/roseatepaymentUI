@@ -88,4 +88,12 @@ export class PaymentService {
       const url = `${environment.apiUrl}/payment/links/${paymentId}/transactions`;
       return this.http.get(url);
   }
+
+  /**
+   * Generate Transaction Link
+   */
+  getTransactionByPaymentLink(paymentId: string): Observable<any> {
+      const url = `${environment.apiUrl}/payment/links/${paymentId}`;
+      return this.http.get(url);
+  }
 }

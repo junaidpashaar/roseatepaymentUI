@@ -11,6 +11,7 @@ import { ReservationComponent } from './components/reservation/reservation.compo
 import { CommonModule } from '@angular/common';
 import { PaymentFailureComponent } from './components/payment-failure/payment-failure.component';
 import { PaymentSuccessComponent } from './components/payment-success/payment-success.component';
+import { PaymentLinkComponent } from './components/payment-link/payment-link.component';
 
 @NgModule({
   declarations: [
@@ -18,7 +19,8 @@ import { PaymentSuccessComponent } from './components/payment-success/payment-su
     DepositComponent,
     ReservationComponent,
     PaymentSuccessComponent,
-    PaymentFailureComponent
+    PaymentFailureComponent,
+    PaymentLinkComponent
   ],
   imports: [
     BrowserModule,
